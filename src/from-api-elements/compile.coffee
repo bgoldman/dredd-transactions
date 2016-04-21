@@ -9,20 +9,16 @@ expandUriTemplateWithParameters = require('../expand-uri-template-with-parameter
 
 compileFromApiElements = (parseResult, filename) ->
   transactions = []
-  errors = []
-  warnings = []
+  annotations = []
 
-  component = 'apiDescriptionParser'
   for annotation in children(parseResult, {element: 'annotation'})
-    type = annotation.meta.classes[0]
-    group = if type is 'warning' then warnings else errors
-    group.push({
-      type
-      component
+    annotations.push(
+      type: annotation.meta.classes[0]
+      component: 'apiDescriptionParser'
       code: content(annotation.attributes?.code)
       message: content(annotation)
       location: content(child(annotation.attributes?.sourceMap, {element: 'sourceMap'}))
-    })
+    )
 
   children(parseResult, {element: 'transition'}).map(detectTransactionExamples)
 
@@ -32,38 +28,32 @@ compileFromApiElements = (parseResult, filename) ->
     httpResponse = child(httpTransaction, {element: 'httpResponse'})
 
     origin = compileOrigin(filename, parseResult, httpTransaction)
-    {request, annotations} = compileRequest(parseResult, httpRequest)
+    result = compileRequest(parseResult, httpRequest)
 
-    for error in annotations.errors
-      error.origin = clone(origin)
-      errors.push(error)
-    for warning in annotations.warnings
-      warning.origin = clone(origin)
-      warnings.push(warning)
+    for annotation in result.annotations
+      annotation.origin = clone(origin)
+      annotations.push(annotation)
 
     transactions.push({
       origin
       pathOrigin: compilePathOrigin(filename, parseResult, httpTransaction)
-      request
+      request: result.request
       response: compileResponse(httpResponse)
     })
 
-  {transactions, errors, warnings}
+  {transactions, annotations}
 
 
 compileRequest = (parseResult, httpRequest) ->
   messageBody = child(httpRequest, {element: 'asset', 'meta.classes': 'messageBody'})
-
-  {uri, annotations} = compileUri(parseResult, httpRequest)
-
+  result = compileUri(parseResult, httpRequest)
   {
-    request: {
+    request:
       method: content(httpRequest.attributes.method)
-      uri
+      uri: result.uri
       headers: compileHeaders(child(httpRequest, {element: 'httpHeaders'}))
       body: content(messageBody) or ''
-    }
-    annotations
+    annotations: result.annotations
   }
 
 
@@ -93,7 +83,7 @@ compileUri = (parseResult, httpRequest) ->
   ]
 
   parameters = {}
-  annotations = {errors: [], warnings: []}
+  annotations = []
   href = undefined
 
   for attributes in cascade
@@ -104,16 +94,16 @@ compileUri = (parseResult, httpRequest) ->
   result = validateParameters(parameters)
   component = 'parametersValidation'
   for error in result.errors
-    annotations.errors.push({type: 'error', component, message: error})
+    annotations.push({type: 'error', component, message: error})
   for warning in result.warnings
-    annotations.warnings.push({type: 'warning', component, message: warning})
+    annotations.push({type: 'warning', component, message: warning})
 
   result = expandUriTemplateWithParameters(href, parameters)
   component = 'uriTemplateExpansion'
   for error in result.errors
-    annotations.errors.push({type: 'error', component, message: error})
+    annotations.push({type: 'error', component, message: error})
   for warning in result.warnings
-    annotations.warnings.push({type: 'warning', component, message: warning})
+    annotations.push({type: 'warning', component, message: warning})
 
   {uri: result.uri, annotations}
 

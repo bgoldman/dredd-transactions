@@ -22,7 +22,7 @@ compile = (apiDescriptionDocument, filename, done) ->
 describe('compileFromApiElements()', ->
   describe('API description causing an error in the parser', ->
     err = undefined
-    errors = undefined
+    annotations = undefined
 
     beforeEach((done) ->
       compile('''
@@ -31,37 +31,37 @@ describe('compileFromApiElements()', ->
         \t\t
       ''', (args...) ->
         [err, compilationResult] = args
-        errors = compilationResult.errors
+        {annotations} = compilationResult
         done()
       )
     )
 
     it('is compiled with an error', ->
-      assert.equal(errors.length, 1)
-      assert.equal(errors[0].type, 'error')
+      assert.equal(annotations.length, 1)
+      assert.equal(annotations[0].type, 'error')
     )
     context('the error', ->
       it('comes from parser', ->
-        assert.equal(errors[0].component, 'apiDescriptionParser')
+        assert.equal(annotations[0].component, 'apiDescriptionParser')
       )
       it('has code', ->
-        assert.ok(errors[0].code)
+        assert.ok(annotations[0].code)
       )
       it('has message', ->
-        assert.include(errors[0].message.toLowerCase(), 'tab')
+        assert.include(annotations[0].message.toLowerCase(), 'tab')
       )
       it('has expected location', ->
-        assert.deepEqual(errors[0].location, [[25, 1]])
+        assert.deepEqual(annotations[0].location, [[25, 1]])
       )
       it('has no origin', ->
-        assert.isUndefined(errors[0].origin)
+        assert.isUndefined(annotations[0].origin)
       )
     )
   )
 
   describe('API description causing an error in URI expansion', ->
     err = undefined
-    errors = undefined
+    annotations = undefined
 
     beforeEach((done) ->
       compile('''
@@ -72,30 +72,30 @@ describe('compileFromApiElements()', ->
         + Response
       ''', (args...) ->
         [err, compilationResult] = args
-        errors = compilationResult.errors
+        {annotations} = compilationResult
         done()
       )
     )
 
     it('is compiled with an error', ->
-      assert.equal(errors.length, 1)
-      assert.equal(errors[0].type, 'error')
+      assert.equal(annotations.length, 1)
+      assert.equal(annotations[0].type, 'error')
     )
     context('the error', ->
       it('comes from compiler', ->
-        assert.equal(errors[0].component, 'uriTemplateExpansion')
+        assert.equal(annotations[0].component, 'uriTemplateExpansion')
       )
       it('has no code', ->
-        assert.isUndefined(errors[0].code)
+        assert.isUndefined(annotations[0].code)
       )
       it('has message', ->
-        assert.include(errors[0].message.toLowerCase(), 'uri template')
+        assert.include(annotations[0].message.toLowerCase(), 'uri template')
       )
       it('has no location', ->
-        assert.isUndefined(errors[0].location)
+        assert.isUndefined(annotations[0].location)
       )
       it('has origin', ->
-        assert.deepEqual(errors[0].origin,
+        assert.deepEqual(annotations[0].origin,
           filename: null
           apiName: 'Beehive API'
           resourceGroupName: ''
@@ -109,7 +109,7 @@ describe('compileFromApiElements()', ->
 
   describe('API description causing an error in URI validation', ->
     err = undefined
-    errors = undefined
+    annotations = undefined
 
     beforeEach((done) ->
       compile('''
@@ -122,30 +122,30 @@ describe('compileFromApiElements()', ->
         + Response
       ''', (args...) ->
         [err, compilationResult] = args
-        errors = compilationResult.errors
+        {annotations} = compilationResult
         done()
       )
     )
 
     it('is compiled with an error', ->
-      assert.equal(errors.length, 1)
-      assert.equal(errors[0].type, 'error')
+      assert.equal(annotations.length, 1)
+      assert.equal(annotations[0].type, 'error')
     )
     context('the error', ->
       it('comes from compiler', ->
-        assert.equal(errors[0].component, 'parametersValidation')
+        assert.equal(annotations[0].component, 'parametersValidation')
       )
       it('has no code', ->
-        assert.isUndefined(errors[0].code)
+        assert.isUndefined(annotations[0].code)
       )
       it('has message', ->
-        assert.include(errors[0].message.toLowerCase(), 'no example value')
+        assert.include(annotations[0].message.toLowerCase(), 'no example value')
       )
       it('has no location', ->
-        assert.isUndefined(errors[0].location)
+        assert.isUndefined(annotations[0].location)
       )
       it('has origin', ->
-        assert.deepEqual(errors[0].origin,
+        assert.deepEqual(annotations[0].origin,
           filename: null
           apiName: 'Beehive API'
           resourceGroupName: ''
@@ -159,7 +159,7 @@ describe('compileFromApiElements()', ->
 
   describe('API description causing a warning in the parser', ->
     err = undefined
-    warnings = undefined
+    annotations = undefined
 
     beforeEach((done) ->
       compile('''
@@ -170,37 +170,37 @@ describe('compileFromApiElements()', ->
         + Response
       ''', (args...) ->
         [err, compilationResult] = args
-        warnings = compilationResult.warnings
+        {annotations} = compilationResult
         done()
       )
     )
 
     it('is compiled with a warning', ->
-      assert.equal(warnings.length, 1)
-      assert.equal(warnings[0].type, 'warning')
+      assert.equal(annotations.length, 1)
+      assert.equal(annotations[0].type, 'warning')
     )
     context('the warning', ->
       it('comes from parser', ->
-        assert.equal(warnings[0].component, 'apiDescriptionParser')
+        assert.equal(annotations[0].component, 'apiDescriptionParser')
       )
       it('has code', ->
-        assert.ok(warnings[0].code)
+        assert.ok(annotations[0].code)
       )
       it('has message', ->
-        assert.include(warnings[0].message.toLowerCase(), 'status code')
+        assert.include(annotations[0].message.toLowerCase(), 'status code')
       )
       it('has expected location', ->
-        assert.deepEqual(warnings[0].location, [[63, 10]])
+        assert.deepEqual(annotations[0].location, [[63, 10]])
       )
       it('has no origin', ->
-        assert.isUndefined(warnings[0].origin)
+        assert.isUndefined(annotations[0].origin)
       )
     )
   )
 
   describe('API description causing a warning in URI expansion', ->
     err = undefined
-    warnings = undefined
+    annotations = undefined
 
     beforeEach((done) ->
       compile('''
@@ -211,30 +211,30 @@ describe('compileFromApiElements()', ->
         + Response 203
       ''', (args...) ->
         [err, compilationResult] = args
-        warnings = compilationResult.warnings
+        {annotations} = compilationResult
         done()
       )
     )
 
     it('is compiled with a warning', ->
-      assert.equal(warnings.length, 1)
-      assert.equal(warnings[0].type, 'warning')
+      assert.equal(annotations.length, 1)
+      assert.equal(annotations[0].type, 'warning')
     )
     context('the warning', ->
       it('comes from parser', ->
-        assert.equal(warnings[0].component, 'uriTemplateExpansion')
+        assert.equal(annotations[0].component, 'uriTemplateExpansion')
       )
       it('has no code', ->
-        assert.isUndefined(warnings[0].code)
+        assert.isUndefined(annotations[0].code)
       )
       it('has message', ->
-        assert.include(warnings[0].message.toLowerCase(), 'ambiguous')
+        assert.include(annotations[0].message.toLowerCase(), 'ambiguous')
       )
       it('has no location', ->
-        assert.isUndefined(warnings[0].location)
+        assert.isUndefined(annotations[0].location)
       )
       it('has origin', ->
-        assert.deepEqual(warnings[0].origin,
+        assert.deepEqual(annotations[0].origin,
           filename: null
           apiName: 'Beehive API'
           resourceGroupName: ''
@@ -248,7 +248,7 @@ describe('compileFromApiElements()', ->
 
   describe('API description causing a warning in URI validation', ->
     err = undefined
-    warnings = undefined
+    annotations = undefined
 
     apiDescriptionDocument = '''
       FORMAT: 1A
@@ -273,30 +273,30 @@ describe('compileFromApiElements()', ->
       options = {type: 'refract', generateSourceMap: true}
       protagonist.parse(apiDescriptionDocument, options, (err, parseResult) ->
         return done(err) unless parseResult
-        warnings = stubbedCompileFromApiElements(parseResult, null).warnings
+        {annotations} = stubbedCompileFromApiElements(parseResult, null)
         done()
       )
     )
 
     it('is compiled with a warning', ->
-      assert.equal(warnings.length, 1)
-      assert.equal(warnings[0].type, 'warning')
+      assert.equal(annotations.length, 1)
+      assert.equal(annotations[0].type, 'warning')
     )
     context('the warning', ->
       it('comes from compiler', ->
-        assert.equal(warnings[0].component, 'parametersValidation')
+        assert.equal(annotations[0].component, 'parametersValidation')
       )
       it('has no code', ->
-        assert.isUndefined(warnings[0].code)
+        assert.isUndefined(annotations[0].code)
       )
       it('has message', ->
-        assert.include(warnings[0].message, message)
+        assert.include(annotations[0].message, message)
       )
       it('has no location', ->
-        assert.isUndefined(warnings[0].location)
+        assert.isUndefined(annotations[0].location)
       )
       it('has origin', ->
-        assert.deepEqual(warnings[0].origin,
+        assert.deepEqual(annotations[0].origin,
           filename: null
           apiName: 'Beehive API'
           resourceGroupName: ''
@@ -621,8 +621,7 @@ describe('compileFromApiElements()', ->
       type: 'object'
       properties:
         transactions: {type: 'array', items: transactionSchema}
-        errors: {type: 'array', maxItems: 0} # 0 = no errors occured
-        warnings: {type: 'array', maxItems: 0} # 0 = no warnings occured
+        annotations: {type: 'array', maxItems: 0}
 
     err = undefined
     compilationResult = undefined

@@ -167,5 +167,14 @@ describe 'dreddTransactions [AST vs. BLUEPRINT]', ->
         done()
       )
 
-    it 'and the results are the same', ->
-      assert.deepEqual(returnedObjectAst, returnedObjectBlueprint)
+    it 'and the transactions are the same', ->
+      assert.deepEqual(
+        returnedObjectAst.transactions,
+        returnedObjectBlueprint.transactions
+      )
+
+    it 'and number of annotations is the same', ->
+      assert.deepEqual(
+        returnedObjectAst.transactions,
+        returnedObjectBlueprint.transactions
+      )

@@ -78,8 +78,7 @@ dt.compile('# My API\n...', 'apiary.apib', function (error, compilationResult) {
 Result of compilation. Alongside compiled [Transaction][transaction-object-spec] objects contains also errors and warnings, mainly from API description parser.
 
 - `transactions` (array[[Transaction][transaction-object-spec]]) - Compiled _HTTP Transactions_.
-- `errors` (array[[Annotation][annotation-object-spec]]) - Errors which occurred during parsing of the API description or during compilation of transactions.
-- `warnings` (array[[Annotation][annotation-object-spec]]) - Warnings which occurred during parsing of the API description or during compilation of transactions.
+- `annotations` (array[[Annotation][annotation-object-spec]]) - Errors and warnings which occurred during parsing of the API description or during compilation of transactions.
 
 <a name="transaction-object"></a>
 ### Transaction (object)
