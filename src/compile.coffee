@@ -226,7 +226,7 @@ compileOriginExampleName = (mediaType, parseResult, httpTransaction) ->
 
   if mediaType is 'text/vnd.apiblueprint'
     if content(transition.attributes.examples) > 1
-      exampleName = "Example #{httpTransaction.attributes.example}"
+      exampleName = transition.content[httpTransaction.attributes.example].content[0].meta.title.content;
   else
     statusCode = content(httpResponse.attributes.statusCode)
     headers = compileHeaders(child(httpResponse, {element: 'httpHeaders'}))
